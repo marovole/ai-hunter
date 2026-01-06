@@ -144,14 +144,23 @@ class TwitterAIMarker {
       '[data-testid="User-Name"]',
       '[data-testid="UserAvatar"]',
       '[data-testid="cellInnerDiv"]',
-      'article'
+      '[data-testid="tweetText"]',
+      'article[role="article"]',
+      '[role="article"]',
+      '.css-175oi2z'  // Common Twitter container class
     ];
 
     let elements = [];
     for (const selector of selectors) {
-      elements = elements.concat(Array.from(document.querySelectorAll(selector)));
+      try {
+        const found = document.querySelectorAll(selector);
+        elements = elements.concat(Array.from(found));
+      } catch (e) {
+        // Invalid selector, skip
+      }
     }
 
+    console.log(`[AI Hunter] Searched ${selectors.length} selectors, found ${elements.length} elements`);
     return [...new Set(elements)];
   }
 
@@ -223,7 +232,12 @@ class TwitterAIMarker {
       'img[src*="pbs.twimg.com"]',
       'img[src*="abs.twimg.com"]',
       '[data-testid="UserAvatar"] img',
-      'img[alt*="profile"]'
+      '[data-testid="UserAvatar"]',
+      'img[alt*="profile"]',
+      'img[alt*="avatar"]',
+      'img[alt*="user"]',
+      'img[data-testid*="avatar"]',
+      'article img'
     ];
 
     for (const selector of selectors) {
@@ -233,6 +247,15 @@ class TwitterAIMarker {
 
     if (element.tagName === 'IMG' && element.src) {
       return element;
+    }
+
+    // Try to find any image in the element
+    const allImages = element.querySelectorAll('img');
+    for (const img of allImages) {
+      const src = img.getAttribute('src') || '';
+      if (src && (src.includes('twimg') || src.includes('profile') || src.includes('default'))) {
+        return img;
+      }
     }
 
     return null;
@@ -312,39 +335,50 @@ class TwitterAIMarker {
 
   extractUsername(element) {
     try {
-      const linkSelectors = [
-        'a[href*="/"]',
-        '[data-testid="User-Name"] a',
-        '[role="link"]'
-      ];
+      // Method 1: Find link elements with usernames
+      const allLinks = element.querySelectorAll('a[href*="/"]');
+      for (const link of allLinks) {
+        const href = link.getAttribute('href') || '';
+        const match = href.match(/^\/([a-zA-Z0-9_]+)$/);
+        if (match && match[1] && !match[1].match(/^(home|search|notifications|messages|compose|explore|lists|bookmarks|profile|more)$/i)) {
+          return match[1];
+        }
+      }
 
-      for (const selector of linkSelectors) {
-        const link = element.closest('a') || element.querySelector(selector);
-        if (link && link.href) {
-          const match = link.href.match(/\/(?:[a-zA-Z0-9_]+\/status\/)?(@?[a-zA-Z0-9_]+)(?:\?|\/|$)/);
-          if (match && match[1]) {
-            let username = match[1].replace('@', '');
-            if (username && !username.match(/^(status|home|search|notifications|messages|compose)$/i)) {
-              return username;
-            }
+      // Method 2: Look for @username in text content
+      const textContent = element.textContent || '';
+      const atMentionMatch = textContent.match(/@([a-zA-Z0-9_]{1,15})/);
+      if (atMentionMatch && atMentionMatch[1]) {
+        return atMentionMatch[1];
+      }
+
+      // Method 3: Find data-testid User-Name element
+      const userNameEl = element.querySelector('[data-testid="User-Name"]');
+      if (userNameEl) {
+        const spans = userNameEl.querySelectorAll('span');
+        for (const span of spans) {
+          const text = span.textContent.trim();
+          if (text.startsWith('@') && text.length > 1) {
+            return text.substring(1);
           }
         }
       }
 
-      const nameElement = element.querySelector('[data-testid="User-Name"]');
-      if (nameElement) {
-        const spans = nameElement.querySelectorAll('span');
-        for (const span of spans) {
-          const text = span.textContent.trim();
-          if (text.startsWith('@')) {
-            return text.substring(1);
+      // Method 4: Look for link in closest article
+      const article = element.closest('article') || element.closest('[role="article"]');
+      if (article) {
+        const userLink = article.querySelector('a[href*="/"]');
+        if (userLink) {
+          const href = userLink.getAttribute('href') || '';
+          const match = href.match(/^\/([a-zA-Z0-9_]+)$/);
+          if (match && match[1]) {
+            return match[1];
           }
         }
       }
 
       return null;
     } catch (error) {
-      console.error('[AI Hunter] 提取用户名失败:', error);
       return null;
     }
   }
