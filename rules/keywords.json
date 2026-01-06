@@ -1,0 +1,33 @@
+{
+  "bio_keywords": [
+    "I am an AI",
+    "artificial intelligence",
+    "AI assistant",
+    "I'm a bot",
+    "chatbot",
+    "language model",
+    "languagemodel",
+    "large language model",
+    "LLM",
+    "GPT",
+    "OpenAI",
+    "Claude",
+    "Bard",
+    "AI模型",
+    "人工智能",
+    "我是AI",
+    "我是机器人",
+    "聊天机器人"
+  ],
+  "username_patterns": [
+    "^bot_",
+    "_bot$",
+    "^ai_",
+    "_ai$",
+    "^gpt",
+    "gpt_",
+    "^chatbot",
+    "_chatbot$"
+  ],
+  "weight": 0.7
+}

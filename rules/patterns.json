@@ -1,0 +1,28 @@
+{
+  "repetitive_phrases": [
+    "As an AI",
+    "I don't have personal",
+    "I'm here to help",
+    "artificial intelligence",
+    "based on my training",
+    "my knowledge cutoff",
+    "I was trained by",
+    "large language model",
+    "language model",
+    "helpful and harmless",
+    "I cannot",
+    "I'm unable to",
+    "my apologies"
+  ],
+  "template_indicators": [
+    "Based on my training",
+    "My knowledge cutoff",
+    "I was trained by",
+    "As a language model",
+    "I'm an AI language model",
+    "I don't have personal opinions",
+    "I don't have access to",
+    "I cannot browse the internet"
+  ],
+  "weight": 0.5
+}

@@ -1,0 +1,211 @@
+/* AI Hunter - Avatar Marking Styles */
+
+/* Main marked account container */
+.ai-marked-account {
+  position: relative;
+}
+
+/* Avatar border for high risk */
+.ai-marked-account img[src*="profile_images"],
+.ai-marked-account img[src*="pbs.twimg.com"],
+.ai-marked-account img[src*="abs.twimg.com"],
+.ai-confidence-high img[src*="profile_images"],
+.ai-confidence-high img[src*="pbs.twimg.com"],
+.ai-confidence-high img[src*="abs.twimg.com"] {
+  border: 3px solid #ff4444 !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 12px rgba(255, 68, 68, 0.6) !important;
+}
+
+/* Avatar border for medium risk */
+.ai-confidence-medium img[src*="profile_images"],
+.ai-confidence-medium img[src*="pbs.twimg.com"],
+.ai-confidence-medium img[src*="abs.twimg.com"] {
+  border: 3px solid #ff8800 !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 10px rgba(255, 136, 0, 0.5) !important;
+}
+
+/* Avatar border for low risk */
+.ai-confidence-low img[src*="profile_images"],
+.ai-confidence-low img[src*="pbs.twimg.com"],
+.ai-confidence-low img[src*="abs.twimg.com"] {
+  border: 2px solid #ffcc00 !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 8px rgba(255, 204, 0, 0.4) !important;
+}
+
+/* Confidence badge - top right corner */
+.ai-confidence-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: bold;
+  color: white;
+  z-index: 1000;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.ai-confidence-badge.high {
+  background: #ff4444;
+}
+
+.ai-confidence-badge.medium {
+  background: #ff8800;
+}
+
+.ai-confidence-badge.low {
+  background: #ffcc00;
+  color: #333;
+}
+
+/* Tooltip on hover */
+.ai-marked-account[data-tooltip]::before,
+.ai-confidence-high[data-tooltip]::before,
+.ai-confidence-medium[data-tooltip]::before,
+.ai-confidence-low[data-tooltip]::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1001;
+  pointer-events: none;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Arrow for tooltip */
+.ai-marked-account[data-tooltip]::after,
+.ai-confidence-high[data-tooltip]::after,
+.ai-confidence-medium[data-tooltip]::after,
+.ai-confidence-low[data-tooltip]::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.9);
+  margin-bottom: -4px;
+  z-index: 1001;
+  pointer-events: none;
+}
+
+/* Block button styling */
+.ai-hunter-block-btn {
+  background: #ff4444 !important;
+  color: white !important;
+  border: none !important;
+  padding: 6px 12px !important;
+  border-radius: 16px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+  margin-left: 8px !important;
+}
+
+.ai-hunter-block-btn:hover {
+  background: #cc0000 !important;
+  transform: scale(1.05) !important;
+}
+
+/* Toast notification */
+.ai-hunter-toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  z-index: 10000;
+  animation: ai-hunter-fade-in 0.3s ease-out;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.ai-hunter-toast.success {
+  background: rgba(76, 175, 80, 0.95);
+}
+
+.ai-hunter-toast.error {
+  background: rgba(244, 67, 54, 0.95);
+}
+
+@keyframes ai-hunter-fade-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes ai-hunter-fade-out {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+}
+
+/* Scanning indicator */
+.ai-hunter-scanning {
+  position: relative;
+}
+
+.ai-hunter-scanning::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(29, 161, 242, 0.1);
+  border-radius: 50%;
+  animation: ai-hunter-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes ai-hunter-pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+}
+
+/* Hide on specific Twitter elements to avoid false positives */
+[data-testid="birdSectorPivot"],
+[data-testid="側RoundedShadowButton"],
+[role="navigation"] {
+  pointer-events: none !important;
+}
+
+/* Scoped styles for Twitter article elements */
+article [data-testid="User-Name"],
+article [data-testid="UserAvatar"],
+article [data-testid="tweetText"] {
+  /* Allow normal interaction */
+  pointer-events: auto !important;
+}

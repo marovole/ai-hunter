@@ -1,0 +1,6 @@
+{
+  "max_tweets_per_hour": 50,
+  "max_tweets_per_day": 200,
+  "active_24_7_threshold": 0.9,
+  "weight": 0.8
+}

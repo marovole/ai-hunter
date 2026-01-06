@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>AI Hunter</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <header>
+      <img src="../icons/icon48.png" alt="AI Hunter" class="logo">
+      <h1 data-i18n="title">AI Hunter</h1>
+      <div class="language-switcher">
+        <button id="lang-zh" class="lang-btn active">中文</button>
+        <button id="lang-en" class="lang-btn">EN</button>
+      </div>
+    </header>
+
+    <div class="stats-section">
+      <div class="stat-item">
+        <span id="detected-count" class="stat-value">0</span>
+        <label data-i18n="detected_count" class="stat-label">已检测</label>
+      </div>
+      <div class="stat-item">
+        <span id="blocked-count" class="stat-value">0</span>
+        <label data-i18n="blocked_count" class="stat-label">已屏蔽</label>
+      </div>
+    </div>
+
+    <div class="control-section">
+      <h3 data-i18n="control_title" class="section-title">检测控制</h3>
+
+      <div class="toggle-item">
+        <label class="switch">
+          <input type="checkbox" id="enable-detection" checked>
+          <span class="slider"></span>
+        </label>
+        <span data-i18n="enable_detection" class="toggle-label">启用检测</span>
+      </div>
+
+      <div class="toggle-item">
+        <label class="switch">
+          <input type="checkbox" id="auto-block">
+          <span class="slider"></span>
+        </label>
+        <span data-i18n="auto_block" class="toggle-label">自动屏蔽高风险账号</span>
+      </div>
+
+      <div class="sensitivity-section">
+        <label data-i18n="sensitivity_label" class="sensitivity-label">检测灵敏度</label>
+        <input type="range" id="sensitivity-slider" min="1" max="5" value="3" class="sensitivity-range">
+        <div class="sensitivity-labels">
+          <span data-i18n="low" class="sensitivity-value">低</span>
+          <span data-i18n="medium" class="sensitivity-value">中</span>
+          <span data-i18n="high" class="sensitivity-value">高</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-section">
+      <button id="refresh-btn" class="btn-primary">
+        <span data-i18n="refresh_label">刷新页面</span>
+      </button>
+      <button id="options-btn" class="btn-secondary">
+        <span data-i18n="settings_label">高级设置</span>
+      </button>
+    </div>
+
+    <div class="whitelist-section">
+      <h3 data-i18n="whitelist_title" class="section-title">本地白名单</h3>
+      <div class="whitelist-input">
+        <input type="text" id="whitelist-username" data-i18n="whitelist_placeholder" placeholder="@username" class="whitelist-input-field">
+        <button id="add-whitelist-btn" class="btn-small">+</button>
+      </div>
+      <div id="whitelist-list" class="whitelist-list"></div>
+    </div>
+
+    <footer>
+      <span data-i18n="version" class="version">v1.0.0</span>
+      <a href="#" id="feedback-link" data-i18n="feedback" class="feedback-link">反馈</a>
+    </footer>
+  </div>
+
+  <script src="../libs/i18n.js"></script>
+  <script src="../libs/storage.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

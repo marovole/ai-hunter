@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>AI Hunter - Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="options-container">
+    <header>
+      <img src="../icons/icon48.png" alt="AI Hunter" class="logo">
+      <h1 data-i18n="title">AI Hunter</h1>
+      <span data-i18n="settings" class="settings-title">设置</span>
+    </header>
+
+    <div class="settings-sections">
+      <section class="settings-section">
+        <h2 data-i18n="language" class="section-title">语言设置</h2>
+        <div class="language-options">
+          <button id="lang-zh-btn" class="lang-option">
+            <span class="lang-name">中文</span>
+            <span class="lang-status"></span>
+          </button>
+          <button id="lang-en-btn" class="lang-option">
+            <span class="lang-name">English</span>
+            <span class="lang-status"></span>
+          </button>
+        </div>
+      </section>
+
+      <section class="settings-section">
+        <h2 data-i18n="control_title" class="section-title">检测设置</h2>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <label data-i18n="enable_detection" class="setting-label">启用检测</label>
+            <p class="setting-desc">开启/关闭AI账号检测功能</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="enable-detection" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <label data-i18n="auto_block" class="setting-label">自动屏蔽</label>
+            <p class="setting-desc">高风险账号自动加入黑名单</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="auto-block">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item slider-setting">
+          <div class="setting-info">
+            <label data-i18n="sensitivity_label" class="setting-label">检测灵敏度</label>
+            <p class="setting-desc">越高越容易检测到AI账号</p>
+          </div>
+          <div class="slider-container">
+            <input type="range" id="sensitivity-slider" min="1" max="5" value="3" class="setting-range">
+            <div class="slider-labels">
+              <span data-i18n="low">低</span>
+              <span data-i18n="medium">中</span>
+              <span data-i18n="high">高</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="settings-section">
+        <h2 data-i18n="whitelist_title" class="section-title">白名单管理</h2>
+        <p class="section-desc">白名单中的账号不会被检测</p>
+
+        <div class="list-input">
+          <input type="text" id="whitelist-input" data-i18n="whitelist_placeholder" placeholder="@username" class="list-input-field">
+          <button id="add-whitelist-btn" class="btn-add" data-i18n="add_btn">添加</button>
+        </div>
+        <div id="whitelist-items" class="list-items"></div>
+      </section>
+
+      <section class="settings-section">
+        <h2 data-i18n="blacklist_title" class="section-title">黑名单管理</h2>
+        <p class="section-desc">已标记的AI账号列表</p>
+
+        <div class="list-input">
+          <input type="text" id="blacklist-input" placeholder="@username" class="list-input-field">
+          <button id="add-blacklist-btn" class="btn-add" data-i18n="add_btn">添加</button>
+        </div>
+        <div id="blacklist-items" class="list-items"></div>
+      </section>
+
+      <section class="settings-section">
+        <h2 class="section-title">统计信息</h2>
+        <div class="stats-grid">
+          <div class="stat-box">
+            <span id="total-detected" class="stat-number">0</span>
+            <span data-i18n="detected_count" class="stat-text">已检测</span>
+          </div>
+          <div class="stat-box">
+            <span id="total-blocked" class="stat-number">0</span>
+            <span data-i18n="blocked_count" class="stat-text">已屏蔽</span>
+          </div>
+        </div>
+        <button id="reset-stats-btn" class="btn-reset">重置统计</button>
+      </section>
+    </div>
+
+    <footer>
+      <span data-i18n="version">v1.0.0</span>
+      <a href="#" id="feedback-link" data-i18n="feedback">反馈</a>
+    </footer>
+  </div>
+
+  <script src="../libs/i18n.js"></script>
+  <script src="../libs/storage.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>
