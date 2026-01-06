@@ -1,20 +1,79 @@
 class RuleEngine {
   constructor() {
-    this.rules = {};
+    this.rules = this.getDefaultRules();
+    this.rulesLoaded = false;
+  }
+
+  getDefaultRules() {
+    return {
+      keywords: {
+        bio_keywords: [
+          "I am an AI", "artificial intelligence", "AI assistant", "I'm a bot",
+          "chatbot", "language model", "languagemodel", "large language model",
+          "LLM", "GPT", "OpenAI", "Claude", "Bard", "AI模型", "人工智能",
+          "我是AI", "我是机器人", "聊天机器人"
+        ],
+        username_patterns: [
+          "^bot_", "_bot$", "^ai_", "_ai$", "^gpt", "gpt_",
+          "^chatbot", "_chatbot$"
+        ],
+        weight: 0.7
+      },
+      patterns: {
+        repetitive_phrases: [
+          "As an AI", "I don't have personal", "I'm here to help",
+          "artificial intelligence", "based on my training", "my knowledge cutoff",
+          "I was trained by", "large language model", "language model",
+          "helpful and harmless", "I cannot", "I'm unable to", "my apologies"
+        ],
+        template_indicators: [
+          "Based on my training", "My knowledge cutoff", "I was trained by",
+          "As a language model", "I'm an AI language model",
+          "I don't have personal opinions", "I don't have access to",
+          "I cannot browse the internet"
+        ],
+        weight: 0.5
+      },
+      frequency: {
+        max_tweets_per_hour: 50,
+        max_tweets_per_day: 200,
+        active_24_7_threshold: 0.9,
+        weight: 0.8
+      },
+      metadata: {
+        low_followers_threshold: 100,
+        followers_following_ratio: 0.1,
+        no_avatar_weight: 0.3,
+        no_bio_weight: 0.4,
+        new_account_threshold_days: 30,
+        weight: 0.6
+      }
+    };
   }
 
   async loadRules() {
+    if (this.rulesLoaded) return;
+
     const ruleFiles = ['keywords', 'patterns', 'frequency', 'metadata'];
+    let loadedCount = 0;
+
     for (const file of ruleFiles) {
       try {
-        const response = await fetch(chrome.runtime.getURL(`rules/${file}.json`));
-        if (response.ok) {
-          this.rules[file] = await response.json();
+        const url = chrome.runtime.getURL(`rules/${file}.json`);
+        if (url && !url.includes('invalid')) {
+          const response = await fetch(url);
+          if (response.ok) {
+            this.rules[file] = await response.json();
+            loadedCount++;
+          }
         }
       } catch (error) {
-        console.error(`Failed to load rule file: ${file}`, error);
+        console.warn(`[AI Hunter] Using default rules for ${file}`);
       }
     }
+
+    this.rulesLoaded = true;
+    console.log(`[AI Hunter] Rules loaded: ${loadedCount}/${ruleFiles.length} from files, using defaults for rest`);
   }
 
   checkKeywords(accountData) {

@@ -39,22 +39,18 @@ class I18nManager {
 
   async loadTranslations(lang) {
     try {
-      const response = await fetch(chrome.runtime.getURL(`locales/${lang}.json`));
-      if (response.ok) {
-        this.translations = await response.json();
-      } else {
-        throw new Error('Failed to load translations');
-      }
-    } catch (error) {
-      console.error('Loading translations failed, using zh-CN:', error);
-      try {
-        const response = await fetch(chrome.runtime.getURL('locales/zh-CN.json'));
+      const url = chrome.runtime.getURL(`locales/${lang}.json`);
+      if (url && !url.includes('invalid')) {
+        const response = await fetch(url);
         if (response.ok) {
           this.translations = await response.json();
+          return;
         }
-      } catch (e) {
-        this.translations = this.getFallbackTranslations();
       }
+      throw new Error('Invalid URL or failed fetch');
+    } catch (error) {
+      console.warn(`[AI Hunter] Loading translations failed, using fallback for ${lang}:`, error.message);
+      this.translations = this.getFallbackTranslations();
     }
   }
 
@@ -87,7 +83,17 @@ class I18nManager {
       possible: "可能",
       low_risk: "低风险",
       block: "屏蔽",
-      blocked_success: "已屏蔽"
+      blocked_success: "已屏蔽",
+      language: "语言",
+      chinese: "中文",
+      english: "English",
+      blacklist_title: "本地黑名单",
+      remove: "移除",
+      confirm_block: "确认屏蔽",
+      cancel: "取消",
+      loading: "加载中...",
+      error: "错误",
+      success: "成功"
     };
   }
 

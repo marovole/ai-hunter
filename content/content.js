@@ -18,23 +18,38 @@ class TwitterAIMarker {
   }
 
   async start() {
-    await this.detector.init();
+    console.log('[AI Hunter] Starting detection engine...');
+    try {
+      await this.detector.init();
+      console.log('[AI Hunter] Detector initialized');
+    } catch (error) {
+      console.warn('[AI Hunter] Detector init warning:', error.message);
+    }
+
     await this.waitForTwitterLoad();
     await this.scanAllAccounts();
     this.startMutationObserver();
     this.sendReadyMessage();
+    console.log('[AI Hunter] Detection engine running');
   }
 
   async waitForTwitterLoad() {
     return new Promise((resolve) => {
+      let attempts = 0;
+      const maxAttempts = 50;
+
       const checkReady = () => {
+        attempts++;
         const mainContent = document.querySelector('[role="main"]') ||
                           document.querySelector('[data-testid="primaryColumn"]') ||
                           document.body;
         if (mainContent && document.readyState === 'complete') {
           setTimeout(resolve, 1000);
+        } else if (attempts < maxAttempts) {
+          setTimeout(checkReady, 200);
         } else {
-          requestAnimationFrame(checkReady);
+          console.log('[AI Hunter] Twitter load timeout, starting anyway...');
+          setTimeout(resolve, 500);
         }
       };
       checkReady();

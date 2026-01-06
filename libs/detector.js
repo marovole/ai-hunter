@@ -2,57 +2,75 @@ class AIDetector {
   constructor() {
     this.markedAccounts = new Set();
     this.initialized = false;
+    this.useDefaultRules = true;
   }
 
   async init() {
     if (this.initialized) return;
-    await ruleEngine.loadRules();
+    try {
+      await ruleEngine.loadRules();
+      console.log('[AI Hunter] Detection engine initialized with default rules');
+    } catch (error) {
+      console.warn('[AI Hunter] Detection engine using fallback rules:', error.message);
+    }
     this.initialized = true;
   }
 
   async detectAccount(accountData) {
-    await this.init();
+    try {
+      await this.init();
+    } catch (error) {
+      console.warn('[AI Hunter] Detection init failed, using defaults');
+    }
 
     const username = accountData.username?.toLowerCase();
     if (!username) {
       return { confidence: 0, level: 'none', reasons: [] };
     }
 
-    const inWhitelist = await storage.isInWhitelist(username);
-    if (inWhitelist) {
-      return { confidence: 0, level: 'none', reasons: ['在白名单中'] };
-    }
+    try {
+      const inWhitelist = await storage.isInWhitelist(username);
+      if (inWhitelist) {
+        return { confidence: 0, level: 'none', reasons: ['在白名单中'] };
+      }
 
-    const inBlacklist = await storage.isInBlacklist(username);
-    if (inBlacklist) {
-      return { confidence: 1.0, level: 'high', reasons: ['在本地黑名单中'] };
+      const inBlacklist = await storage.isInBlacklist(username);
+      if (inBlacklist) {
+        return { confidence: 1.0, level: 'high', reasons: ['在本地黑名单中'] };
+      }
+    } catch (error) {
+      console.warn('[AI Hunter] Storage check failed:', error.message);
     }
 
     let confidence = 0;
     let reasons = [];
 
-    const keywordScore = ruleEngine.checkKeywords(accountData);
-    if (keywordScore > 0) {
-      confidence += keywordScore * 0.3;
-      reasons.push('Bio/用户名包含AI相关关键词');
-    }
+    try {
+      const keywordScore = ruleEngine.checkKeywords(accountData);
+      if (keywordScore > 0) {
+        confidence += keywordScore * 0.3;
+        reasons.push('Bio/用户名包含AI相关关键词');
+      }
 
-    const frequencyScore = ruleEngine.checkFrequency(accountData);
-    if (frequencyScore > 0) {
-      confidence += frequencyScore * 0.25;
-      reasons.push('发帖频率异常');
-    }
+      const frequencyScore = ruleEngine.checkFrequency(accountData);
+      if (frequencyScore > 0) {
+        confidence += frequencyScore * 0.25;
+        reasons.push('发帖频率异常');
+      }
 
-    const metadataScore = ruleEngine.checkMetadata(accountData);
-    if (metadataScore > 0) {
-      confidence += metadataScore * 0.25;
-      reasons.push('账号元数据异常');
-    }
+      const metadataScore = ruleEngine.checkMetadata(accountData);
+      if (metadataScore > 0) {
+        confidence += metadataScore * 0.25;
+        reasons.push('账号元数据异常');
+      }
 
-    const patternScore = ruleEngine.checkPatterns(accountData);
-    if (patternScore > 0) {
-      confidence += patternScore * 0.2;
-      reasons.push('内容模式类似AI生成');
+      const patternScore = ruleEngine.checkPatterns(accountData);
+      if (patternScore > 0) {
+        confidence += patternScore * 0.2;
+        reasons.push('内容模式类似AI生成');
+      }
+    } catch (error) {
+      console.warn('[AI Hunter] Rule check failed:', error.message);
     }
 
     confidence = Math.min(confidence, 1.0);
