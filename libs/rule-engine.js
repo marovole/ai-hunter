@@ -60,20 +60,23 @@ class RuleEngine {
     for (const file of ruleFiles) {
       try {
         const url = chrome.runtime.getURL(`rules/${file}.json`);
-        if (url && !url.includes('invalid')) {
-          const response = await fetch(url);
-          if (response.ok) {
-            this.rules[file] = await response.json();
-            loadedCount++;
-          }
+
+        // Skip fetch if URL is invalid
+        if (!url || url.includes('chrome-extension://invalid') || url.includes('undefined')) {
+          continue;
+        }
+
+        const response = await fetch(url);
+        if (response.ok) {
+          this.rules[file] = await response.json();
+          loadedCount++;
         }
       } catch (error) {
-        console.warn(`[AI Hunter] Using default rules for ${file}`);
+        // Silently use default rules
       }
     }
 
     this.rulesLoaded = true;
-    console.log(`[AI Hunter] Rules loaded: ${loadedCount}/${ruleFiles.length} from files, using defaults for rest`);
   }
 
   checkKeywords(accountData) {
