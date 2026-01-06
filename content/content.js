@@ -115,19 +115,27 @@ class TwitterAIMarker {
   }
 
   async scanAllAccounts() {
+    console.log('[AI Hunter] Scanning all accounts...');
     const accountElements = this.getAllAccountElements();
+    console.log(`[AI Hunter] Found ${accountElements.length} account elements`);
     for (const element of accountElements) {
       await this.processAccountElement(element);
     }
+    console.log(`[AI Hunter] Scan complete, marked accounts:`, this.markedAccounts.size);
   }
 
   async scanNewAccounts() {
     const accountElements = this.getAllAccountElements();
+    let newCount = 0;
     for (const element of accountElements) {
       const username = this.extractUsername(element);
       if (username && !this.markedAccounts.has(username)) {
+        newCount++;
         await this.processAccountElement(element);
       }
+    }
+    if (newCount > 0) {
+      console.log(`[AI Hunter] Scanned ${newCount} new accounts`);
     }
   }
 
@@ -149,11 +157,15 @@ class TwitterAIMarker {
 
   async processAccountElement(element) {
     const username = this.extractUsername(element);
-    if (!username || this.markedAccounts.has(username)) return;
+    if (!username) {
+      return;
+    }
+    if (this.markedAccounts.has(username)) {
+      return;
+    }
 
     const retryKey = username.toLowerCase();
     if (this.retryCount.get(retryKey) >= this.maxRetries) {
-      console.log(`[AI Hunter] 跳过多次失败的账号: @${username}`);
       return;
     }
 
@@ -162,6 +174,7 @@ class TwitterAIMarker {
       const result = await this.detector.detectAccount(accountData);
 
       if (result.confidence >= 0.2) {
+        console.log(`[AI Hunter] Detected @${username} with ${(result.confidence * 100).toFixed(0)}% confidence`);
         this.markAccount(element, username, result);
         this.detector.markAccount(username);
         this.markedAccounts.set(username, result);
@@ -175,7 +188,6 @@ class TwitterAIMarker {
 
       this.retryCount.delete(retryKey);
     } catch (error) {
-      console.error(`[AI Hunter] 检测账号 @${username} 出错:`, error);
       const count = (this.retryCount.get(retryKey) || 0) + 1;
       this.retryCount.set(retryKey, count);
     }
